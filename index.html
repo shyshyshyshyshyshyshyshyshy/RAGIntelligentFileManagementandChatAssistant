@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件打开与AI助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            background-attachment: fixed;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 35px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 15px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2), inset 0 2px 4px rgba(0,0,0,0.05);
+            transform: translateY(-2px);
+        }
+        
+        button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        button:hover::before {
+            left: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(-1px);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        
+        button[style*="#28a745"] {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        button[style*="#28a745"]:hover {
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+        }
+        
+        .status {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+            font-weight: 500;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .status::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+        }
+        
+        .status.success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            box-shadow: 0 4px 15px rgba(212, 237, 218, 0.4);
+        }
+        
+        .status.success::before {
+            background: #28a745;
+        }
+        
+        .status.error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            box-shadow: 0 4px 15px rgba(248, 215, 218, 0.4);
+        }
+        
+        .status.error::before {
+            background: #dc3545;
+        }
+        
+        .file-list {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px;
+            background: white;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .file-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .file-item:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .file-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .file-item::before {
+            content: '📄';
+            font-size: 18px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            padding: 30px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        /* iframe容器样式优化 */
+        .iframe-container {
+            margin-top: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            background: white;
+        }
+        
+        .iframe-container iframe {
+            border-radius: 13px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 28px;
+            }
+            
+            .content {
+                padding: 25px;
+            }
+            
+            .section {
+                padding: 20px;
+                margin-bottom: 25px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📁 智能文件助手</h1>
+            <p>文件管理 + AI对话一体化工具</p>
+        </div>
+        
+        <div class="content">
+            <!-- 文件打开区域 -->
+            <div class="section">
+                <h2>📂 文件打开</h2>
+                <div class="input-group">
+                    <input type="text" id="fileName" placeholder="输入文件名（如：example.txt）">
+                    <button onclick="openFile()">打开文件</button>
+                </div>
+                <button onclick="browseFiles()" style="background: #28a745;">浏览文件</button>
+                
+                <div id="fileStatus" class="status"></div>
+                
+                <div id="fileList" class="file-list" style="display: none;">
+                    <!-- 文件列表将通过JavaScript动态加载 -->
+                </div>
+            </div>
+            
+            <!-- AI对话区域（嵌入Dify iframe） -->
+            <div class="section">
+                <h2>🤖 AI助手对话</h2>
+                <!-- 嵌入Dify聊天窗口iframe -->
+                <div class="iframe-container">
+                    <iframe 
+                        src="http://localhost/chatbot/WBq5LG9Py2yhwNwB" 
+                        style="width: 100%; height: 500px;" 
+                        frameborder="0" 
+                        allowtransparency="true"
+                    ></iframe>
+                </div>
+            </div>
+            
+            <div class="loading" id="loading">
+                <p>🔄 处理中...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 服务状态检查
+        async function checkServices() {
+            showStatus('正在检查服务状态...', 'info', 'fileStatus');
+            
+            try {
+                // 1. 检查文件打开服务
+                const fileResponse = await fetch('http://localhost:5002/health');
+                if (!fileResponse.ok) throw new Error('文件服务未启动');
+                
+                showStatus('✅ 所有服务运行正常！', 'success', 'fileStatus');
+                return true;
+            } catch (error) {
+                showStatus(`❌ 服务检查失败: ${error.message}`, 'error', 'fileStatus');
+                return false;
+            }
+        }
+
+        // 打开文件
+        async function openFile() {
+            const fileName = document.getElementById('fileName').value.trim();
+            if (!fileName) {
+                showStatus('请输入文件名', 'error', 'fileStatus');
+                return;
+            }
+            
+            showLoading(true);
+            
+            try {
+                const response = await fetch(`http://localhost:5002/open-file?file_name=${encodeURIComponent(fileName)}`);
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    showStatus(`✅ ${result.message}`, 'success', 'fileStatus');
+                } else {
+                    showStatus(`❌ ${result.message}`, 'error', 'fileStatus');
+                }
+            } catch (error) {
+                showStatus(`❌ 连接失败: ${error.message}`, 'error', 'fileStatus');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // 浏览文件
+        async function browseFiles() {
+            const fileList = document.getElementById('fileList');
+            fileList.style.display = fileList.style.display === 'none' ? 'block' : 'none';
+            
+            if (fileList.style.display === 'block') {
+                // 这里可以添加获取文件列表的逻辑
+                fileList.innerHTML = '<div class="file-item">功能开发中...</div>';
+            }
+        }
+        
+        // 显示状态信息
+        function showStatus(message, type, elementId) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${type}`;
+            element.style.display = 'block';
+            
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+        
+        // 显示/隐藏加载动画
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        // 页面加载时检查服务状态
+        window.addEventListener('load', checkServices);
+    </script>
+</body>
+</html>
