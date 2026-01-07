@@ -10,11 +10,11 @@ class SmartFileSearcher:
     """智能文件搜索器 - 结合Dify知识库和本地文件系统"""
     
     def __init__(self):
-        self.knowledge_base_id = "1f0cc924-cba1-4113-83eb-dca99b0a31f9"
-        self.api_key = "dataset-zqGccO9VowfmI7bPG6opOh5C"
+        self.knowledge_base_id = "your id"
+        self.api_key = "your key"
         self.base_url = "http://localhost"
         self.file_opener_url = "http://localhost:5002/open-file"
-        self.allowed_dir = "D:/code/python/ALLOWED_FILE_DIR"
+        self.allowed_dir = "your path"
     
     def search_knowledge_base(self, query):
         """在Dify知识库中搜索文件"""

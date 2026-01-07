@@ -292,7 +292,7 @@ class FileConverter:
 class Config:
     """配置"""
     DIFY_BASE_URL = os.getenv('DIFY_BASE_URL', 'http://localhost').rstrip('/')
-    DATASET_API_KEY = os.getenv('DIFY_API_KEY', 'dataset-zqGccO9VowfmI7bPG6opOh5C')
+    DATASET_API_KEY = os.getenv('DIFY_API_KEY', 'your api key')
     
     
     
@@ -301,18 +301,18 @@ class Config:
     IMAGE_UPLOAD_ENABLED = os.getenv('IMAGE_UPLOAD_ENABLED', 'false').lower() == 'true'
     
     # 两个知识库ID
-    TXT_KNOWLEDGE_BASE_ID = os.getenv('DIFY_KNOWLEDGE_BASE_ID', '1f0cc924-cba1-4113-83eb-dca99b0a31f9')
-    ORIGINAL_KNOWLEDGE_BASE_ID = os.getenv('ORIGINAL_KNOWLEDGE_BASE_ID', 'b59ade74-3ce2-4857-8d67-8f3f0faedab2')
+    TXT_KNOWLEDGE_BASE_ID = os.getenv('DIFY_KNOWLEDGE_BASE_ID', 'your id')
+    ORIGINAL_KNOWLEDGE_BASE_ID = os.getenv('ORIGINAL_KNOWLEDGE_BASE_ID', 'your id')
     
     #父子模式配置
-    PARENT_CHILD_KB_ID = os.getenv('PARENT_CHILD_KB_ID', '1388750e-551b-4084-b699-17091a5b8364')  # 您新创建的父子模式知识库ID
+    PARENT_CHILD_KB_ID = os.getenv('PARENT_CHILD_KB_ID', 'your id')  # 您新创建的父子模式知识库ID
     PARENT_CHILD_KB_ENABLED = os.getenv('PARENT_CHILD_KB_ENABLED', 'true').lower() == 'true'
 
     # Chatflow配置
-    CHATFLOW_APP_ID = os.getenv('WORKFLOW_APP_ID', 'app-A9xu8Jb4GeGZAOvHhv3capwV')
-    CHATFLOW_API_KEY = os.getenv('WORKFLOW_API_KEY', 'app-A9xu8Jb4GeGZAOvHhv3capwV')
+    CHATFLOW_APP_ID = os.getenv('WORKFLOW_APP_ID', 'your key')
+    CHATFLOW_API_KEY = os.getenv('WORKFLOW_API_KEY', 'your key')
     
-    MONITOR_DIR = os.getenv('MONITOR_DIR', 'D:/code/python/ALLOWED_FILE_DIR')
+    MONITOR_DIR = os.getenv('MONITOR_DIR', 'your path')
     ALLOWED_EXTENSIONS = tuple(os.getenv('ALLOWED_EXTENSIONS', 
         '.txt,.docx,.doc,.pdf,.pptx,.xlsx,.csv,.md,.jpg,.jpeg,.png,.gif,.bmp,.webp,.tiff').split(','))
     PROCESS_INTERVAL = int(os.getenv('PROCESS_INTERVAL', '5'))
